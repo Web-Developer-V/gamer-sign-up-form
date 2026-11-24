@@ -1,0 +1,28 @@
+import type { input } from "@/types/types";
+
+export default function Input({ id, name, placeholder, inputType, isValid, inputValue, isSubmitted, autoComplete, compositionEnd, setSubmitted, change }: input) {
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    change(e);
+
+    if (inputValue.trim() === "") {
+      setSubmitted((prev) => ({
+        ...prev,
+        [id]: false,
+      }));
+    }
+  };
+
+  return (
+    <input
+      type={inputType}
+      className={`w-full h-11.25 px-3.5 bg-navy-950 border border-neutral-600 text-[16px] leading-6 text-neutral-300 group-hover:border-neutral-300 transition-all peer-hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 ${(isSubmitted || inputValue) && !isValid ? "outline-2 outline-offset-2 outline-reds-400 focus-visible:outline-reds-400" : undefined}`}
+      placeholder={placeholder}
+      name={name}
+      id={id}
+      autoComplete={autoComplete}
+      value={inputValue}
+      onChange={changeHandler}
+      onCompositionEnd={compositionEnd}
+    />
+  );
+}
