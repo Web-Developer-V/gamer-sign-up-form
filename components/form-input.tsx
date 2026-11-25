@@ -3,24 +3,24 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-import type { inputProps } from "@/types/types";
+import type { FormInputProps } from "@/types/types";
 import DecryptedText from "./motion/decrypted-text";
 import Input from "./input";
 
-export default function FormInput({ label, id, name, description, placeholder, type, autoComplete, isChecked, inputValue, passwordLevel, isValid, showPassWord, isSubmitted, change, compositionEnd, toggleShowPassword, setSubmitted }: inputProps) {
+export default function FormInput({ label, id, name, description, placeholder, type, autoComplete, isChecked, inputValue, passwordLevel, isValid, showPassword, hasSubmitted, change, compositionEnd, toggleShowPassword }: FormInputProps) {
   const isPassword = type === "password" || type === "confirm_password";
   const passwordKey = type === "confirm_password" ? "confirm_password" : "password";
-  const inputType = isPassword ? (showPassWord?.[passwordKey] ? "text" : "password") : type || "text";
+  const inputType = isPassword ? (showPassword?.[passwordKey] ? "text" : "password") : type || "text";
 
   const passwordLevelCount = {
-    week: 1,
+    weak: 1,
     fair: 2,
     good: 3,
     strong: 4,
   };
   const fillBars = passwordLevel ? passwordLevelCount[passwordLevel] : 0;
   const helperText =
-    (isSubmitted || inputValue) && !isValid
+    (hasSubmitted || inputValue) && !isValid
       ? id === "callsign"
         ? "Use at least 3 Characters"
         : id === "email"
@@ -53,7 +53,7 @@ export default function FormInput({ label, id, name, description, placeholder, t
       <div className="relative">
         {isPassword && (
           <button
-            aria-label={showPassWord?.[passwordKey] ? "비밀번호 숨기기" : "비밀번호 표시"}
+            aria-label={showPassword?.[passwordKey] ? "비밀번호 숨기기" : "비밀번호 표시"}
             type="button"
             className="peer absolute z-1 right-2 top-1/2 p-1 translate-y-[-50%] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 transition-all"
             onClick={() => toggleShowPassword?.(passwordKey)}
@@ -65,19 +65,7 @@ export default function FormInput({ label, id, name, description, placeholder, t
           </button>
         )}
         <div className="relative group">
-          <Input
-            id={id}
-            name={name}
-            placeholder={placeholder}
-            inputType={inputType}
-            inputValue={inputValue}
-            isValid={isValid}
-            isSubmitted={isSubmitted}
-            compositionEnd={compositionEnd}
-            setSubmitted={setSubmitted}
-            autoComplete={autoComplete}
-            change={change}
-          />
+          <Input id={id} name={name} placeholder={placeholder} type={inputType} inputValue={inputValue} isValid={isValid} hasSubmitted={hasSubmitted} compositionEnd={compositionEnd} autoComplete={autoComplete} change={change} />
           {isChecked && <Image src="/images/icon-tick-20.svg" alt="검증 완료 아이콘" width={20} height={20} className={`absolute ${isPassword ? "right-11" : "right-4"} top-1/2 translate-y-[-50%]`} />}
         </div>
       </div>
@@ -87,7 +75,7 @@ export default function FormInput({ label, id, name, description, placeholder, t
           {Array.from({ length: 4 }, (_, index) => {
             const verifiedColorCss =
               index < fillBars
-                ? passwordLevel === "week"
+                ? passwordLevel === "weak"
                   ? "before:w-full before:bg-reds-400"
                   : passwordLevel === "fair"
                     ? "before:w-full before:bg-ambers-400"

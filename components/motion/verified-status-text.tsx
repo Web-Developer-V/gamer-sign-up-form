@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+
 import DecryptedText from "./decrypted-text";
 
-export default function VerifiedStatusText({ isValid, notValidText, validateValue }: { isValid: boolean; notValidText: string; validateValue?: string }) {
-  const statusText = isValid ? "ok" : validateValue?.trim() ? notValidText : "pending";
+import type { VerifiedStatusTextProps } from "@/types/types";
+
+export default function VerifiedStatusText({ isValid, notValidText, validateValue, isComplete }: VerifiedStatusTextProps) {
+  const statusText = isComplete ? "locked" : isValid ? "ok" : validateValue?.trim() ? notValidText : "pending";
 
   const [shouldAnimateText, setShouldAnimateText] = useState(false);
   const previousValidLength = useRef(statusText);
@@ -33,7 +36,7 @@ export default function VerifiedStatusText({ isValid, notValidText, validateValu
           loopDelay={2000}
           useOriginalCharsOnly={false}
           characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
-          className={`revealed ${isValid === true ? "text-white" : validateValue?.trim() ? "text-reds-400" : undefined}`}
+          className={`revealed ${isValid === true ? "text-neutral-100" : validateValue?.trim() ? "text-reds-400" : undefined}`}
           encryptedClassName="encrypted"
         />
       )}

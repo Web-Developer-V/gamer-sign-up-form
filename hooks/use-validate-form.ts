@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { PasswordLevel } from "@/types/types";
+import type { PasswordLevelType } from "@/types/types";
 
 export default function useValidateForm() {
   const [validateValue, setValidateValue] = useState({
@@ -16,9 +16,9 @@ export default function useValidateForm() {
     email: false,
     password: false,
     confirm_password: false,
-    termsCheck: false,
+    termsChecked: false,
   });
-  const [passwordLevel, setPasswordLevel] = useState<PasswordLevel | undefined>(undefined);
+  const [passwordLevel, setPasswordLevel] = useState<PasswordLevelType | undefined>(undefined);
   const [isChecked, setIsChecked] = useState(false);
   const [inputValue, setInputValue] = useState(false);
 
@@ -41,7 +41,7 @@ export default function useValidateForm() {
       email: nextValidateValue.email.trim() !== "" && emailRegex.test(nextValidateValue.email),
       password: nextValidateValue.password.trim() !== "" && nextValidateValue.password.length >= 8,
       confirm_password: nextValidateValue.password.length > 0 && nextValidateValue.password === nextValidateValue.confirm_password,
-      termsCheck: !!isValid.termsCheck,
+      termsChecked: !!isValid.termsChecked,
     };
 
     const errorId = newIsValid[id as keyof typeof newIsValid];
@@ -64,7 +64,7 @@ export default function useValidateForm() {
     } else if (newIsValid.password && (hasUppercase || hasSymbol)) {
       setPasswordLevel("fair");
     } else {
-      setPasswordLevel("week");
+      setPasswordLevel("weak");
     }
   };
 
@@ -92,6 +92,8 @@ export default function useValidateForm() {
     changeHandler,
     compositionEndHandler,
     setIsValid,
+    setValidateValue,
+    setPasswordLevel,
     validateValue,
     isValid,
     isChecked,

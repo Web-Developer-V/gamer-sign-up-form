@@ -9,9 +9,9 @@ import VerifiedListItemTitle from "./verified-list-item-title";
 import VerifiedStatusText from "./motion/verified-status-text";
 import DecryptedText from "./motion/decrypted-text";
 
-import type { formArticleProps } from "@/types/types";
+import type { VerifiedStatusArticleProps } from "@/types/types";
 
-export default function VerifiedStatusArticle({ isValid, validateValue }: { isValid: formArticleProps["isValid"]; validateValue: formArticleProps["validateValue"] }) {
+export default function VerifiedStatusArticle({ isValid, validateValue, isComplete }: VerifiedStatusArticleProps) {
   const isValidLength = Object.values(isValid).filter(Boolean).length;
   const totalLength = Object.keys(isValid).length;
   const completeValid = Object.values(isValid).every(Boolean);
@@ -50,37 +50,34 @@ export default function VerifiedStatusArticle({ isValid, validateValue }: { isVa
         <ul className="flex flex-col gap-y-0.5 pt-5 uppercase">
           <VerifiedListItem>
             <span>operator id</span>
-            <span className={completeValid ? "text-limes-500" : ""}>
-              {!shouldAnimateText ? (
-                <span>{isValidLength}</span>
-              ) : (
-                <DecryptedText
-                  text={String(isValidLength) ?? ""}
-                  animateOn="view"
-                  effect="scramble"
-                  sequential
-                  revealDirection="start"
-                  speed={60}
-                  maxIterations={10}
-                  hoverRadius={100}
-                  scrambleColor="#7d8c9b"
-                  loop={false}
-                  loopDelay={2000}
-                  useOriginalCharsOnly={false}
-                  characters="1234567890"
-                  className="revealed"
-                  encryptedClassName="encrypted"
-                />
-              )}
-              /<span>{totalLength}</span> ready
-            </span>
-          </VerifiedListItem>
-          <li className="my-2 font-orbitron font-extrabold text-neutral-300 text-[24px] leading-8 tracking-[0.04em] uppercase">
-            {!shouldAnimateText ? (
-              <span>unassigned</span>
+            {!isComplete ? (
+              <span className={completeValid ? "text-limes-500" : ""}>
+                {!shouldAnimateText ? (
+                  <span>{isValidLength}</span>
+                ) : (
+                  <DecryptedText
+                    text={String(isValidLength) ?? ""}
+                    animateOn="view"
+                    effect="scramble"
+                    sequential
+                    revealDirection="start"
+                    speed={60}
+                    maxIterations={10}
+                    hoverRadius={100}
+                    scrambleColor="#7d8c9b"
+                    loop={false}
+                    loopDelay={2000}
+                    useOriginalCharsOnly={false}
+                    characters="1234567890"
+                    className="revealed"
+                    encryptedClassName="encrypted"
+                  />
+                )}
+                /<span>{totalLength}</span> ready
+              </span>
             ) : (
               <DecryptedText
-                text={isValid.callsign ? validateValue.callsign : "unassigned"}
+                text="provisioned"
                 animateOn="view"
                 effect="scramble"
                 sequential
@@ -92,31 +89,54 @@ export default function VerifiedStatusArticle({ isValid, validateValue }: { isVa
                 loop={false}
                 loopDelay={2000}
                 useOriginalCharsOnly={false}
-                characters="1234567890"
-                className={`revealed ${isValid.callsign ? "text-white" : undefined}`}
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
+                className={`revealed uppercase ${isComplete ? "text-limes-500" : ""}`}
+                encryptedClassName="encrypted"
+              />
+            )}
+          </VerifiedListItem>
+          <li className="my-2 font-orbitron font-extrabold text-neutral-300 text-[24px] leading-8 tracking-[0.04em] uppercase">
+            {!shouldAnimateText ? (
+              <span>unassigned</span>
+            ) : (
+              <DecryptedText
+                text={(isValid.callsign ? validateValue?.callsign : "unassigned") ?? ""}
+                animateOn="view"
+                effect="scramble"
+                sequential
+                revealDirection="start"
+                speed={60}
+                maxIterations={10}
+                hoverRadius={100}
+                scrambleColor="#7d8c9b"
+                loop={false}
+                loopDelay={2000}
+                useOriginalCharsOnly={false}
+                characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
+                className={`revealed ${isValid.callsign ? "text-neutral-100" : undefined}`}
                 encryptedClassName="encrypted"
               />
             )}
           </li>
           <VerifiedListItem>
             <VerifiedListItemTitle title="callsign" />
-            <VerifiedStatusText isValid={isValid.callsign} notValidText="Too Short" validateValue={validateValue.callsign} />
+            <VerifiedStatusText isValid={isValid.callsign} notValidText="Too Short" validateValue={validateValue?.callsign} isComplete={isComplete} />
           </VerifiedListItem>
           <VerifiedListItem>
             <VerifiedListItemTitle title="email" />
-            <VerifiedStatusText isValid={isValid.email} notValidText="Marformed" validateValue={validateValue.email} />
+            <VerifiedStatusText isValid={isValid.email} notValidText="Marformed" validateValue={validateValue?.email} isComplete={isComplete} />
           </VerifiedListItem>
           <VerifiedListItem>
             <VerifiedListItemTitle title="password" />
-            <VerifiedStatusText isValid={isValid.password} notValidText="Too  Short" validateValue={validateValue.password} />
+            <VerifiedStatusText isValid={isValid.password} notValidText="Too  Short" validateValue={validateValue?.password} isComplete={isComplete} />
           </VerifiedListItem>
           <VerifiedListItem>
             <VerifiedListItemTitle title="confirm" />
-            <VerifiedStatusText isValid={isValid.confirm_password} notValidText="Mismatch" validateValue={validateValue.confirm_password} />
+            <VerifiedStatusText isValid={isValid.confirm_password} notValidText="Mismatch" validateValue={validateValue?.confirm_password} isComplete={isComplete} />
           </VerifiedListItem>
           <VerifiedListItem>
             <VerifiedListItemTitle title="terms" />
-            <VerifiedStatusText isValid={isValid.termsCheck} notValidText="Required" />
+            <VerifiedStatusText isValid={isValid.termsChecked} notValidText="Required" isComplete={isComplete} />
           </VerifiedListItem>
         </ul>
       </div>

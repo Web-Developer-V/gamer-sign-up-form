@@ -1,65 +1,88 @@
-export interface verifiedListItemProps {
+export type InputType = Pick<FormInputProps, "id" | "name" | "placeholder" | "type" | "inputValue" | "isValid" | "hasSubmitted" | "autoComplete" | "compositionEnd" | "change">;
+
+export type PasswordLevelType = "weak" | "fair" | "good" | "strong";
+
+export type FormFieldKey = "callsign" | "email" | "password" | "confirm_password";
+
+export type IsValidType = Record<FormFieldKey, boolean> & {
+  termsChecked: boolean;
+};
+
+export type InputValueType = Record<FormFieldKey, string>;
+
+export interface VerifiedListItemProps {
   children: React.ReactNode;
 }
 
-export interface verifiedListItemTitleProps {
+export interface VerifiedListItemTitleProps {
   title: string;
 }
 
-export interface formArticleProps {
-  isValid: IsValid;
-  validateValue: {
-    callsign: string;
-    email: string;
-    password: string;
-    confirm_password: string;
-  };
-  passwordLevel?: PasswordLevel;
+export interface FormArticleProps {
+  isValid: IsValidType;
+  validateValue: InputValueType;
+  passwordLevel?: PasswordLevelType;
+  isComplete: boolean;
   change: (e: React.ChangeEvent<HTMLInputElement>) => void;
   compositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
-  setIsValid: React.Dispatch<React.SetStateAction<IsValid>>;
+  setIsValid: React.Dispatch<React.SetStateAction<IsValidType>>;
+  setValidateValue: React.Dispatch<React.SetStateAction<InputValueType>>;
+  setIsComplete: (state: boolean) => void;
+  setPasswordLevel: React.Dispatch<React.SetStateAction<PasswordLevelType | undefined>>;
 }
 
-export interface inputProps {
+export interface FormInputProps {
   label: string;
   id: string;
   name: string;
   description?: string;
   placeholder?: string;
-  type?: string;
   autoComplete?: string;
-  isChecked: boolean;
   inputValue: string;
-  inputType?: React.HTMLInputTypeAttribute;
+  type?: React.HTMLInputTypeAttribute;
   isValid: boolean;
-  passwordLevel?: PasswordLevel;
-  showPassWord?: {
+  hasSubmitted: boolean;
+  isChecked?: boolean;
+  passwordLevel?: PasswordLevelType;
+  showPassword?: {
     password: boolean;
     confirm_password: boolean;
   };
-  isSubmitted: boolean;
-  setSubmitted: React.Dispatch<React.SetStateAction<SubmittedState>>;
   change: (e: React.ChangeEvent<HTMLInputElement>) => void;
   compositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
   toggleShowPassword?: (id: "password" | "confirm_password") => void;
 }
 
-export type input = Pick<inputProps, "id" | "name" | "placeholder" | "inputType" | "inputValue" | "isValid" | "isSubmitted" | "setSubmitted" | "autoComplete" | "compositionEnd" | "change">;
+export interface VerifiedStatusArticleProps {
+  isValid: FormArticleProps["isValid"];
+  validateValue?: FormArticleProps["validateValue"];
+  isComplete: FormArticleProps["isComplete"];
+}
 
-export type PasswordLevel = "week" | "fair" | "good" | "strong";
+export interface VerifiedStatusTextProps {
+  isValid: boolean;
+  notValidText: string;
+  validateValue?: string;
+  isComplete: FormArticleProps["isComplete"];
+}
 
-export type IsValid = {
-  callsign: boolean;
-  email: boolean;
-  password: boolean;
-  confirm_password: boolean;
-  termsCheck: boolean;
-};
+export interface HandShakeCompleteProps {
+  validateValue: FormArticleProps["validateValue"];
+  setIsComplete: (state: boolean) => void;
+  setValidateValue: FormArticleProps["setValidateValue"];
+  setIsValid: FormArticleProps["setIsValid"];
+  setHasSubmitted: (state: boolean) => void;
+  setPasswordLevel: FormArticleProps["setPasswordLevel"];
+  setShouldAnimateText: (state: boolean) => void;
+}
 
-export type SubmittedState = {
-  callsign: boolean;
-  email: boolean;
-  password: boolean;
-  confirm_password: boolean;
-  termsCheck: boolean;
-};
+export interface FormInputFieldsProps {
+  name: FormFieldKey;
+  id: FormFieldKey;
+  label: string;
+  description?: string;
+  placeholder?: string;
+  autoComplete?: string;
+  passwordLevel?: PasswordLevelType;
+  type: React.HTMLInputTypeAttribute;
+}
