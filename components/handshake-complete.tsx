@@ -2,34 +2,19 @@ import { motion } from "motion/react";
 
 import type { HandShakeCompleteProps } from "@/types/types";
 
-export default function HandShakeComplete({ validateValue, setIsComplete, setIsValid, setValidateValue, setShouldAnimateText, setPasswordLevel, setHasSubmitted }: HandShakeCompleteProps) {
+export default function HandShakeComplete({ validateValue, setHasSubmitted, setShouldAnimateText, reset }: HandShakeCompleteProps) {
   const clickHandler = () => {
-    setIsComplete(false);
-
-    setValidateValue({
-      callsign: "",
-      email: "",
-      password: "",
-      confirm_password: "",
-    });
-
-    setIsValid({
-      callsign: false,
-      email: false,
-      password: false,
-      confirm_password: false,
-      termsChecked: false,
-    });
-
+    reset();
     setHasSubmitted(false);
-
-    setPasswordLevel(undefined);
     setShouldAnimateText(false);
   };
 
   return (
     <motion.div key="complete" initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-      <img src="/images/icon-hex-check.svg" alt="complete 체크 완료 로고" className="-ml-5 mb-2" />
+      {
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/images/icon-hex-check.svg" alt="" aria-hidden="true" className="-ml-5 mb-2" />
+      }
       <p className="flex mb-3">
         <span className="inline-flex gap-3 pt-2 mr-4">
           <span className="h-4 w-1 skew-x-[-35deg] bg-limes-500" />

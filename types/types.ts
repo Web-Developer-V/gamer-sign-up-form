@@ -1,4 +1,4 @@
-export type InputType = Pick<FormInputProps, "id" | "name" | "placeholder" | "type" | "inputValue" | "isValid" | "hasSubmitted" | "autoComplete" | "compositionEnd" | "change">;
+// export type InputType = Pick<FormInputProps, "id" | "name" | "placeholder" | "type" | "inputValue" | "isValid" | "hasSubmitted" | "autoComplete" | "compositionEnd" | "change">;
 
 export type PasswordLevelType = "weak" | "fair" | "good" | "strong";
 
@@ -18,17 +18,25 @@ export interface VerifiedListItemTitleProps {
   title: string;
 }
 
-export interface FormArticleProps {
-  isValid: IsValidType;
-  validateValue: InputValueType;
-  passwordLevel?: PasswordLevelType;
+export interface FormStateProps {
   isComplete: boolean;
-  change: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  compositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
-  setIsValid: React.Dispatch<React.SetStateAction<IsValidType>>;
-  setValidateValue: React.Dispatch<React.SetStateAction<InputValueType>>;
-  setIsComplete: (state: boolean) => void;
-  setPasswordLevel: React.Dispatch<React.SetStateAction<PasswordLevelType | undefined>>;
+  validateValue: InputValueType;
+  isValid: IsValidType;
+  passwordLevel: PasswordLevelType | undefined;
+}
+
+export interface FormActionsProps {
+  validate: (id: string, value: string) => void;
+  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  compositionEndHandler: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  toggleTermsHandler: () => void;
+  completeFormHandler: () => void;
+  resetFormHandler: () => void;
+}
+
+export interface FormArticleProps {
+  formState: FormStateProps;
+  formActions: FormActionsProps;
 }
 
 export interface FormInputProps {
@@ -53,26 +61,36 @@ export interface FormInputProps {
   toggleShowPassword?: (id: "password" | "confirm_password") => void;
 }
 
+export interface InputProps {
+  id: string;
+  name: string;
+  placeholder?: string;
+  type?: string;
+  autoComplete?: string;
+  inputValue: string;
+  isValid: boolean;
+  hasSubmitted: boolean;
+  compositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
+  change: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 export interface VerifiedStatusArticleProps {
-  isValid: FormArticleProps["isValid"];
-  validateValue?: FormArticleProps["validateValue"];
-  isComplete: FormArticleProps["isComplete"];
+  isValid: FormStateProps["isValid"];
+  validateValue?: FormStateProps["validateValue"];
+  isComplete: FormStateProps["isComplete"];
 }
 
 export interface VerifiedStatusTextProps {
   isValid: boolean;
-  notValidText: string;
   validateValue?: string;
-  isComplete: FormArticleProps["isComplete"];
+  notValidText: string;
+  isComplete: FormStateProps["isComplete"];
 }
 
 export interface HandShakeCompleteProps {
-  validateValue: FormArticleProps["validateValue"];
-  setIsComplete: (state: boolean) => void;
-  setValidateValue: FormArticleProps["setValidateValue"];
-  setIsValid: FormArticleProps["setIsValid"];
+  validateValue: FormStateProps["validateValue"];
+  reset: FormActionsProps["resetFormHandler"];
   setHasSubmitted: (state: boolean) => void;
-  setPasswordLevel: FormArticleProps["setPasswordLevel"];
   setShouldAnimateText: (state: boolean) => void;
 }
 
@@ -80,9 +98,9 @@ export interface FormInputFieldsProps {
   name: FormFieldKey;
   id: FormFieldKey;
   label: string;
+  type: React.HTMLInputTypeAttribute;
   description?: string;
   placeholder?: string;
   autoComplete?: string;
   passwordLevel?: PasswordLevelType;
-  type: React.HTMLInputTypeAttribute;
 }

@@ -19,8 +19,7 @@ export default function useValidateForm() {
     termsChecked: false,
   });
   const [passwordLevel, setPasswordLevel] = useState<PasswordLevelType | undefined>(undefined);
-  const [isChecked, setIsChecked] = useState(false);
-  const [inputValue, setInputValue] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const validate = (id: string, value: string) => {
     const callSignRegex = /^[a-zA-Z0-9_-]{3,20}$/;
@@ -44,12 +43,7 @@ export default function useValidateForm() {
       termsChecked: !!isValid.termsChecked,
     };
 
-    const errorId = newIsValid[id as keyof typeof newIsValid];
-    const valueId = nextValidateValue[id as keyof typeof nextValidateValue];
-
     setIsValid(newIsValid);
-    setIsChecked(errorId);
-    setInputValue(valueId.trim() !== "");
 
     const password = nextValidateValue.password;
     const hasUppercase = passwordUppercaseRegex.test(password);
@@ -87,17 +81,52 @@ export default function useValidateForm() {
     validate(e.currentTarget.id, e.currentTarget.value);
   };
 
+  const toggleTermsHandler = () => {
+    setIsValid((prev) => ({
+      ...prev,
+      termsChecked: !prev.termsChecked,
+    }));
+  };
+
+  const completeFormHandler = () => {
+    setIsComplete(true);
+  };
+
+  const resetFormHandler = () => {
+    setIsComplete(false);
+
+    setValidateValue({
+      callsign: "",
+      email: "",
+      password: "",
+      confirm_password: "",
+    });
+
+    setIsValid({
+      callsign: false,
+      email: false,
+      password: false,
+      confirm_password: false,
+      termsChecked: false,
+    });
+
+    setPasswordLevel(undefined);
+  };
+
   return {
-    validate,
-    changeHandler,
-    compositionEndHandler,
-    setIsValid,
-    setValidateValue,
-    setPasswordLevel,
-    validateValue,
-    isValid,
-    isChecked,
-    inputValue,
-    passwordLevel,
+    formActions: {
+      validate,
+      changeHandler,
+      compositionEndHandler,
+      toggleTermsHandler,
+      completeFormHandler,
+      resetFormHandler,
+    },
+    formState: {
+      isComplete,
+      validateValue,
+      isValid,
+      passwordLevel,
+    },
   };
 }

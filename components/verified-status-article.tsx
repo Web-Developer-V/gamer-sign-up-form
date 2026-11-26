@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from "react";
-
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,21 +8,14 @@ import VerifiedStatusText from "./motion/verified-status-text";
 import DecryptedText from "./motion/decrypted-text";
 
 import type { VerifiedStatusArticleProps } from "@/types/types";
+import useAnimateOnValueChange from "@/hooks/use-animate-on-value-change";
 
 export default function VerifiedStatusArticle({ isValid, validateValue, isComplete }: VerifiedStatusArticleProps) {
   const isValidLength = Object.values(isValid).filter(Boolean).length;
   const totalLength = Object.keys(isValid).length;
   const completeValid = Object.values(isValid).every(Boolean);
 
-  const [shouldAnimateText, setShouldAnimateText] = useState(false);
-  const previousValidLength = useRef(isValidLength);
-
-  useEffect(() => {
-    if (previousValidLength.current !== isValidLength) {
-      previousValidLength.current = isValidLength;
-      setShouldAnimateText(true);
-    }
-  }, [isValidLength]);
+  const shouldAnimateText = useAnimateOnValueChange(isValidLength);
 
   return (
     <article className="w-[55%]">

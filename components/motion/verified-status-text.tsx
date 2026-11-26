@@ -1,21 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-
 import DecryptedText from "./decrypted-text";
+
+import useAnimateOnValueChange from "@/hooks/use-animate-on-value-change";
 
 import type { VerifiedStatusTextProps } from "@/types/types";
 
 export default function VerifiedStatusText({ isValid, notValidText, validateValue, isComplete }: VerifiedStatusTextProps) {
   const statusText = isComplete ? "locked" : isValid ? "ok" : validateValue?.trim() ? notValidText : "pending";
 
-  const [shouldAnimateText, setShouldAnimateText] = useState(false);
-  const previousValidLength = useRef(statusText);
-
-  useEffect(() => {
-    if (previousValidLength.current !== statusText) {
-      previousValidLength.current = statusText;
-      setShouldAnimateText(true);
-    }
-  }, [statusText]);
+  const shouldAnimateText = useAnimateOnValueChange(statusText);
 
   return (
     <>

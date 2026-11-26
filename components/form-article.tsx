@@ -42,12 +42,12 @@ const formInputFields: FormInputFieldsProps[] = [
     name: "confirm_password",
     id: "confirm_password",
     label: "confirm password",
-    type: "confirm_password",
+    type: "password",
     autoComplete: "confirm_password",
   },
 ];
 
-export default function FormArticle({ change, compositionEnd, setIsValid, setValidateValue, setIsComplete, setPasswordLevel, isValid, validateValue, passwordLevel, isComplete }: FormArticleProps) {
+export default function FormArticle({ formActions, formState }: FormArticleProps) {
   const accentCss =
     "relative text-limes-500 cursor-pointer before:absolute before:content-[''] before:left-0 before:-bottom-0.5 before:w-full before:border-b before:border-dotted before:border-limes-700 hover:text-neutral-100 hover:before:border-neutral-100 before:transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 transition-colors";
 
@@ -77,11 +77,11 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (!Object.values(isValid).every(Boolean)) {
+      if (!Object.values(formState.isValid).every(Boolean)) {
         return;
       }
 
-      setIsComplete(true);
+      formActions.completeFormHandler();
     } catch (error) {
       setIsTransmitting(false);
       console.error(error);
@@ -97,7 +97,7 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
     <article className="relative w-[45%] bg-neutral-900 border border-neutral-700 before:absolute before:left-0 before:-top-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-left-px after:-top-px after:w-0.5 after:h-6 after:bg-limes-500">
       <div className="flex flex-col justify-center w-full min-h-177.75 relative p-9 before:absolute before:right-0 before:-bottom-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-right-px after:-bottom-px after:w-0.5 after:h-6 after:bg-limes-500">
         <AnimatePresence initial={false} mode="wait">
-          {!isComplete ? (
+          {!formState.isComplete ? (
             <motion.div key="form" initial={{ y: 30, opacity: 1 }} animate={{ y: 0, opacity: 1 }}>
               <p className="flex justify-between pb-4 border-b border-neutral-700">
                 <span className="text-[14px] leading-4 tracking-[0.04em] text-neutral-100 uppercase">new operator</span>
@@ -112,19 +112,17 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
                       <FormInput
                         key={field.name}
                         {...field}
-                        change={change}
-                        compositionEnd={compositionEnd}
-                        isValid={isValid[field.name]}
-                        isChecked={isValid[field.name]}
-                        inputValue={validateValue[field.name]}
+                        change={formActions.changeHandler}
+                        compositionEnd={formActions.compositionEndHandler}
+                        autoComplete={field.autoComplete}
+                        isValid={formState.isValid[field.name]}
+                        inputValue={formState.validateValue[field.name]}
                         hasSubmitted={hasSubmitted}
                         {...(isPasswordField && {
                           toggleShowPassword: toggleShowPasswordHandler,
                           showPassword: isShowPassword,
                         })}
-                        {...(field.name === "password" && {
-                          passwordLevel,
-                        })}
+                        {...(field.name === "password" ? { passwordLevel: formState.passwordLevel } : {})}
                       />
                     );
                   })}
@@ -136,14 +134,9 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
                         type="checkbox"
                         id="checkbox"
                         name="checkbox"
-                        checked={isValid.termsChecked}
-                        onChange={() =>
-                          setIsValid((prev) => ({
-                            ...prev,
-                            termsChecked: !prev.termsChecked,
-                          }))
-                        }
-                        className={`peer w-full h-full appearance-none bg-navy-950 border border-neutral-600 checked:bg-limes-500 checked:border-limes-500 cursor-pointer transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 ${hasSubmitted && !isValid.termsChecked ? "border-reds-400" : undefined}`}
+                        checked={formState.isValid.termsChecked}
+                        onChange={() => formActions.toggleTermsHandler()}
+                        className={`peer w-full h-full appearance-none bg-navy-950 border border-neutral-600 checked:bg-limes-500 checked:border-limes-500 cursor-pointer transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 ${hasSubmitted && !formState.isValid.termsChecked ? "border-reds-400" : undefined}`}
                       />
                       <Image
                         src="/images/icon-tick-16.svg"
@@ -165,7 +158,7 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
                       .
                     </p>
                   </div>
-                  {!isValid.termsChecked && shouldAnimateText && (
+                  {!formState.isValid.termsChecked && shouldAnimateText && (
                     <DecryptedText
                       text={helperText}
                       animateOn="view"
@@ -203,15 +196,7 @@ export default function FormArticle({ change, compositionEnd, setIsValid, setVal
               </form>
             </motion.div>
           ) : (
-            <HandShakeComplete
-              setIsComplete={setIsComplete}
-              validateValue={validateValue}
-              setIsValid={setIsValid}
-              setValidateValue={setValidateValue}
-              setHasSubmitted={setHasSubmitted}
-              setPasswordLevel={setPasswordLevel}
-              setShouldAnimateText={setShouldAnimateText}
-            />
+            <HandShakeComplete reset={formActions.resetFormHandler} validateValue={formState.validateValue} setHasSubmitted={setHasSubmitted} setShouldAnimateText={setShouldAnimateText} />
           )}
         </AnimatePresence>
       </div>

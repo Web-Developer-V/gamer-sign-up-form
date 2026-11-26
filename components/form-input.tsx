@@ -1,16 +1,14 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 import type { FormInputProps } from "@/types/types";
 import DecryptedText from "./motion/decrypted-text";
 import Input from "./input";
+import useAnimateOnValueChange from "@/hooks/use-animate-on-value-change";
 
-export default function FormInput({ label, id, name, description, placeholder, type, autoComplete, isChecked, inputValue, passwordLevel, isValid, showPassword, hasSubmitted, change, compositionEnd, toggleShowPassword }: FormInputProps) {
-  const isPassword = type === "password" || type === "confirm_password";
-  const passwordKey = type === "confirm_password" ? "confirm_password" : "password";
-  const inputType = isPassword ? (showPassword?.[passwordKey] ? "text" : "password") : type || "text";
+export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmitted, showPassword, change, compositionEnd, toggleShowPassword, ...field }: FormInputProps) {
+  const isPassword = field.type === "password";
+  const passwordKey = field.name === "confirm_password" ? "confirm_password" : "password";
+  const inputType = isPassword ? (showPassword?.[passwordKey] ? "text" : "password") : field.type || "text";
 
   const passwordLevelCount = {
     weak: 1,
@@ -21,34 +19,26 @@ export default function FormInput({ label, id, name, description, placeholder, t
   const fillBars = passwordLevel ? passwordLevelCount[passwordLevel] : 0;
   const helperText =
     (hasSubmitted || inputValue) && !isValid
-      ? id === "callsign"
+      ? field.id === "callsign"
         ? "Use at least 3 Characters"
-        : id === "email"
+        : field.id === "email"
           ? "Enter a valid email, like you@example.com"
-          : id === "password"
+          : field.id === "password"
             ? "Use at least 8 Characters"
-            : id === "confirm_password"
+            : field.id === "confirm_password"
               ? "Passwords don't match"
-              : (description ?? "")
-      : (description ?? "");
+              : (field.description ?? "")
+      : (field.description ?? "");
 
   const descriptionCss = "text-[12px] leading-4 text-neutral-400 leading-1";
 
-  const [shouldAnimateText, setShouldAnimateText] = useState(false);
-  const previousHelperText = useRef(helperText);
-
-  useEffect(() => {
-    if (previousHelperText.current !== helperText) {
-      previousHelperText.current = helperText;
-      setShouldAnimateText(true);
-    }
-  }, [helperText]);
+  const shouldAnimateText = useAnimateOnValueChange(helperText);
 
   return (
     <li className="flex flex-col gap-y-2">
-      <label htmlFor={id} className="text-[14px] leading-4 tracking-[0.04em] uppercase">
+      <label htmlFor={field.id} className="text-[14px] leading-4 tracking-[0.04em] uppercase">
         <span className="mr-2 text-limes-500">&gt;</span>
-        <span className="text-neutral-300">{label}</span>
+        <span className="text-neutral-300">{field.label}</span>
       </label>
       <div className="relative">
         {isPassword && (
@@ -65,12 +55,23 @@ export default function FormInput({ label, id, name, description, placeholder, t
           </button>
         )}
         <div className="relative group">
-          <Input id={id} name={name} placeholder={placeholder} type={inputType} inputValue={inputValue} isValid={isValid} hasSubmitted={hasSubmitted} compositionEnd={compositionEnd} autoComplete={autoComplete} change={change} />
-          {isChecked && <Image src="/images/icon-tick-20.svg" alt="검증 완료 아이콘" width={20} height={20} className={`absolute ${isPassword ? "right-11" : "right-4"} top-1/2 translate-y-[-50%]`} />}
+          <Input
+            id={field.id}
+            name={field.name}
+            placeholder={field.placeholder}
+            type={inputType}
+            inputValue={inputValue}
+            isValid={isValid}
+            hasSubmitted={hasSubmitted}
+            compositionEnd={compositionEnd}
+            autoComplete={field.autoComplete}
+            change={change}
+          />
+          {isValid && <Image src="/images/icon-tick-20.svg" alt="검증 완료 아이콘" width={20} height={20} className={`absolute ${isPassword ? "right-11" : "right-4"} top-1/2 translate-y-[-50%]`} />}
         </div>
       </div>
 
-      {type === "password" && (
+      {field.name === "password" && (
         <div className="grid grid-cols-4 gap-x-1">
           {Array.from({ length: 4 }, (_, index) => {
             const verifiedColorCss =

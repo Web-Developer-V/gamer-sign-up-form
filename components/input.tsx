@@ -1,10 +1,6 @@
-import type { InputType } from "@/types/types";
+import type { InputProps } from "@/types/types";
 
-export default function Input({ id, name, placeholder, type, isValid, inputValue, hasSubmitted, autoComplete, compositionEnd, change }: InputType) {
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    change(e);
-  };
-
+export default function Input({ id, name, placeholder, type, isValid, inputValue, hasSubmitted, autoComplete, compositionEnd, change }: InputProps) {
   return (
     <input
       type={type}
@@ -14,7 +10,7 @@ export default function Input({ id, name, placeholder, type, isValid, inputValue
       id={id}
       autoComplete={autoComplete}
       value={inputValue}
-      onChange={changeHandler}
+      onChange={change}
       onCompositionEnd={compositionEnd}
     />
   );
