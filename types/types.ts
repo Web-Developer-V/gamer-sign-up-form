@@ -12,6 +12,7 @@ export type InputValueType = Record<FormFieldKey, string>;
 
 export interface VerifiedListItemProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export interface VerifiedListItemTitleProps {

@@ -94,8 +94,8 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
   const helperText = "Accept the terms to continue";
 
   return (
-    <article className="relative w-[45%] bg-neutral-900 border border-neutral-700 before:absolute before:left-0 before:-top-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-left-px after:-top-px after:w-0.5 after:h-6 after:bg-limes-500">
-      <div className="flex flex-col justify-center w-full min-h-177.75 relative p-9 before:absolute before:right-0 before:-bottom-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-right-px after:-bottom-px after:w-0.5 after:h-6 after:bg-limes-500">
+    <article className="relative w-[45%] bg-neutral-900 border border-neutral-700 before:absolute before:left-0 before:-top-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-left-px after:-top-px after:w-0.5 after:h-6 after:bg-limes-500 max-[1025px]:w-[50%] max-[769px]:w-full">
+      <div className="flex flex-col justify-center w-full min-h-177.75 relative p-9 before:absolute before:right-0 before:-bottom-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-right-px after:-bottom-px after:w-0.5 after:h-6 after:bg-limes-500 max-[1025px]:p-5">
         <AnimatePresence initial={false} mode="wait">
           {!formState.isComplete ? (
             <motion.div key="form" initial={{ y: 30, opacity: 1 }} animate={{ y: 0, opacity: 1 }}>
@@ -146,7 +146,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
                         className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] pointer-events-none opacity-0 peer-checked:opacity-100 transition-colors"
                       />
                     </div>
-                    <p className="text-[12px] text-neutral-300 leading-4 tracking-[0.08em]">
+                    <p className="flex-1 text-[12px] text-neutral-300 leading-4 tracking-[0.08em]">
                       I accept the{" "}
                       <button type="button" className={accentCss}>
                         Terms
