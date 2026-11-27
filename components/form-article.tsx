@@ -55,7 +55,6 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
     password: false,
     confirm_password: false,
   });
-  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [shouldAnimateText, setShouldAnimateText] = useState(false);
   const [isTransmitting, setIsTransmitting] = useState(false);
 
@@ -69,45 +68,42 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
   const formSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setHasSubmitted(true);
+    formActions.setAttemptedSubmitHandler(true);
     setShouldAnimateText(true);
 
     try {
       setIsTransmitting(true);
-
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (!Object.values(formState.isValid).every(Boolean)) {
         return;
       }
 
-      formActions.completeFormHandler();
+      formActions.completeFormHandler(true);
     } catch (error) {
       setIsTransmitting(false);
+      formActions.completeFormHandler(false);
       console.error(error);
     } finally {
       setIsTransmitting(false);
     }
   };
 
-  const descriptionCss = "text-[12px] leading-4 text-neutral-400 leading-1";
-  const helperText = "Accept the terms to continue";
-
   return (
-    <article className="relative w-[45%] bg-neutral-900 border border-neutral-700 before:absolute before:left-0 before:-top-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-left-px after:-top-px after:w-0.5 after:h-6 after:bg-limes-500 max-[1025px]:w-[50%] max-[769px]:w-full">
+    <article className="relative w-full bg-neutral-900 border border-neutral-700 before:absolute before:left-0 before:-top-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-left-px after:-top-px after:w-0.5 after:h-6 after:bg-limes-500 min-[769px]:w-[50%] min-[769px]:min-w-87.5">
       <div className="flex flex-col justify-center w-full min-h-177.75 relative p-9 before:absolute before:right-0 before:-bottom-px before:w-6 before:h-0.5 before:bg-limes-500 after:absolute after:-right-px after:-bottom-px after:w-0.5 after:h-6 after:bg-limes-500 max-[1025px]:p-5">
         <AnimatePresence initial={false} mode="wait">
           {!formState.isComplete ? (
             <motion.div key="form" initial={{ y: 30, opacity: 1 }} animate={{ y: 0, opacity: 1 }}>
               <p className="flex justify-between pb-4 border-b border-neutral-700">
                 <span className="text-[14px] leading-4 tracking-[0.04em] text-neutral-100 uppercase">new operator</span>
-                <span className="text-[14px] leading-4 tracking-[0.04em] text-neutral-500 uppercase">all fields required</span>
+                <span className="text-[14px] leading-4 tracking-[0.04em] text-neutral-500 uppercase max-[769px]:hidden">all fields required</span>
+                <span className="block text-[14px] leading-4 tracking-[0.04em] text-neutral-500 uppercase min-[769px]:hidden">all required</span>
               </p>
               <form onSubmit={formSubmit} className="mt-7">
                 <ul className="flex flex-col gap-y-6">
                   {formInputFields.map((field) => {
                     const isPasswordField = field.name === "password" || field.name === "confirm_password";
-
                     return (
                       <FormInput
                         key={field.name}
@@ -117,7 +113,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
                         autoComplete={field.autoComplete}
                         isValid={formState.isValid[field.name]}
                         inputValue={formState.validateValue[field.name]}
-                        hasSubmitted={hasSubmitted}
+                        hasAttemptedSubmit={formState.hasAttemptedSubmit}
                         {...(isPasswordField && {
                           toggleShowPassword: toggleShowPasswordHandler,
                           showPassword: isShowPassword,
@@ -136,7 +132,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
                         name="checkbox"
                         checked={formState.isValid.termsChecked}
                         onChange={() => formActions.toggleTermsHandler()}
-                        className={`peer w-full h-full appearance-none bg-navy-950 border border-neutral-600 checked:bg-limes-500 checked:border-limes-500 cursor-pointer transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 ${hasSubmitted && !formState.isValid.termsChecked ? "border-reds-400" : undefined}`}
+                        className={`peer w-full h-full appearance-none bg-navy-950 border border-neutral-600 checked:bg-limes-500 checked:border-limes-500 cursor-pointer transition-colors hover:border-neutral-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 ${formState.hasAttemptedSubmit && !formState.isValid.termsChecked && "border-reds-400 focus-visible:outline-reds-400"}`}
                       />
                       <Image
                         src="/images/icon-tick-16.svg"
@@ -160,7 +156,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
                   </div>
                   {!formState.isValid.termsChecked && shouldAnimateText && (
                     <DecryptedText
-                      text={helperText}
+                      text="Accept the terms to continue"
                       animateOn="view"
                       effect="scramble"
                       sequential
@@ -175,7 +171,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
                       characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
                       className="revealed"
                       encryptedClassName="encrypted"
-                      parentClassName={`${descriptionCss}`}
+                      parentClassName="text-[12px] leading-4 text-neutral-400 leading-1"
                     />
                   )}
                 </div>
@@ -196,7 +192,7 @@ export default function FormArticle({ formActions, formState }: FormArticleProps
               </form>
             </motion.div>
           ) : (
-            <HandShakeComplete reset={formActions.resetFormHandler} validateValue={formState.validateValue} setHasSubmitted={setHasSubmitted} setShouldAnimateText={setShouldAnimateText} />
+            <HandShakeComplete reset={formActions.resetFormHandler} validateValue={formState.validateValue} setAttemptedSubmitHandler={formActions.setAttemptedSubmitHandler} setShouldAnimateText={setShouldAnimateText} />
           )}
         </AnimatePresence>
       </div>

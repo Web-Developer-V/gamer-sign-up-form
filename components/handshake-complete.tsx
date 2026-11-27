@@ -2,10 +2,10 @@ import { motion } from "motion/react";
 
 import type { HandShakeCompleteProps } from "@/types/types";
 
-export default function HandShakeComplete({ validateValue, setHasSubmitted, setShouldAnimateText, reset }: HandShakeCompleteProps) {
+export default function HandShakeComplete({ validateValue, setAttemptedSubmitHandler, setShouldAnimateText, reset }: HandShakeCompleteProps) {
   const clickHandler = () => {
     reset();
-    setHasSubmitted(false);
+    setAttemptedSubmitHandler(false);
     setShouldAnimateText(false);
   };
 
@@ -16,7 +16,7 @@ export default function HandShakeComplete({ validateValue, setHasSubmitted, setS
         <img src="/images/icon-hex-check.svg" alt="" aria-hidden="true" className="-ml-5 mb-2" />
       }
       <p className="flex mb-3">
-        <span className="inline-flex gap-3 pt-2 mr-4">
+        <span className="inline-flex gap-2 pt-2 mr-3">
           <span className="h-4 w-1 skew-x-[-35deg] bg-limes-500" />
           <span className="h-4 w-1 skew-x-[-35deg] bg-limes-500" />
         </span>

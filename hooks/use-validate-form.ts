@@ -20,6 +20,7 @@ export default function useValidateForm() {
   });
   const [passwordLevel, setPasswordLevel] = useState<PasswordLevelType | undefined>(undefined);
   const [isComplete, setIsComplete] = useState(false);
+  const [hasAttemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const validate = (id: string, value: string) => {
     const callSignRegex = /^[a-zA-Z0-9_-]{3,20}$/;
@@ -88,8 +89,12 @@ export default function useValidateForm() {
     }));
   };
 
-  const completeFormHandler = () => {
-    setIsComplete(true);
+  const completeFormHandler = (state: boolean) => {
+    setIsComplete(state);
+  };
+
+  const setAttemptedSubmitHandler = (state: boolean) => {
+    setAttemptedSubmit(state);
   };
 
   const resetFormHandler = () => {
@@ -121,12 +126,14 @@ export default function useValidateForm() {
       toggleTermsHandler,
       completeFormHandler,
       resetFormHandler,
+      setAttemptedSubmitHandler,
     },
     formState: {
       isComplete,
       validateValue,
       isValid,
       passwordLevel,
+      hasAttemptedSubmit,
     },
   };
 }

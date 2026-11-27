@@ -5,7 +5,7 @@ import DecryptedText from "./motion/decrypted-text";
 import Input from "./input";
 import useAnimateOnValueChange from "@/hooks/use-animate-on-value-change";
 
-export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmitted, showPassword, change, compositionEnd, toggleShowPassword, ...field }: FormInputProps) {
+export default function FormInput({ isValid, inputValue, passwordLevel, hasAttemptedSubmit, showPassword, change, compositionEnd, toggleShowPassword, ...field }: FormInputProps) {
   const isPassword = field.type === "password";
   const passwordKey = field.name === "confirm_password" ? "confirm_password" : "password";
   const inputType = isPassword ? (showPassword?.[passwordKey] ? "text" : "password") : field.type || "text";
@@ -18,7 +18,7 @@ export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmi
   };
   const fillBars = passwordLevel ? passwordLevelCount[passwordLevel] : 0;
   const helperText =
-    (hasSubmitted || inputValue) && !isValid
+    (hasAttemptedSubmit || inputValue) && !isValid
       ? field.id === "callsign"
         ? "Use at least 3 Characters"
         : field.id === "email"
@@ -30,8 +30,7 @@ export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmi
               : (field.description ?? "")
       : (field.description ?? "");
 
-  const descriptionCss = "text-[12px] leading-4 text-neutral-400 leading-1";
-
+  const descriptionCss = `flex text-[12px] leading-4 text-neutral-400 leading-1 ${(hasAttemptedSubmit || inputValue) && !isValid && "text-reds-400"}`;
   const shouldAnimateText = useAnimateOnValueChange(helperText);
 
   return (
@@ -45,13 +44,10 @@ export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmi
           <button
             aria-label={showPassword?.[passwordKey] ? "비밀번호 숨기기" : "비밀번호 표시"}
             type="button"
-            className="peer absolute z-1 right-2 top-1/2 p-1 translate-y-[-50%] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 transition-all"
+            className={`peer absolute z-1 right-2 top-1/2 p-1 translate-y-[-50%] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-limes-500 transition-all ${(hasAttemptedSubmit || inputValue) && !isValid && "focus-visible:outline-reds-400"}`}
             onClick={() => toggleShowPassword?.(passwordKey)}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20" className="group">
-              <path stroke="#9fadbc" strokeLinecap="square" strokeWidth="1.25" d="M1.667 10s3-5.833 8.333-5.833S18.334 10 18.334 10s-3 5.833-8.334 5.833S1.667 10 1.667 10Z" className="group-hover:stroke-white transition-all" />
-              <path stroke="#9fadbc" strokeLinecap="square" strokeWidth="1.25" d="m10 7.5 2.5 2.5-2.5 2.5L7.5 10z" className="group-hover:stroke-white transition-all" />
-            </svg>
+            <img src={!showPassword?.[passwordKey] ? "/images/icon-eye.svg" : "/images/icon-eye-off.svg"} alt={!showPassword?.[passwordKey] ? "비밀번호 표시 아이콘" : "비밀번호 숨기기 아이콘"} width={20} />
           </button>
         )}
         <div className="relative group">
@@ -62,7 +58,7 @@ export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmi
             type={inputType}
             inputValue={inputValue}
             isValid={isValid}
-            hasSubmitted={hasSubmitted}
+            hasAttemptedSubmit={hasAttemptedSubmit}
             compositionEnd={compositionEnd}
             autoComplete={field.autoComplete}
             change={change}
@@ -92,24 +88,27 @@ export default function FormInput({ isValid, inputValue, passwordLevel, hasSubmi
       {!shouldAnimateText ? (
         <p className={descriptionCss}>{helperText}</p>
       ) : (
-        <DecryptedText
-          text={helperText}
-          animateOn="view"
-          effect="scramble"
-          sequential
-          revealDirection="start"
-          speed={60}
-          maxIterations={10}
-          hoverRadius={100}
-          scrambleColor="#7d8c9b"
-          loop={false}
-          loopDelay={2000}
-          useOriginalCharsOnly={false}
-          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
-          className="revealed"
-          encryptedClassName="encrypted"
-          parentClassName={`${descriptionCss}`}
-        />
+        <p className="flex items-center">
+          {(hasAttemptedSubmit || inputValue) && !isValid && <img src="/images/icon-alert.svg" alt="경고 아이콘" className="w-4 mr-2" />}
+          <DecryptedText
+            text={helperText}
+            animateOn="view"
+            effect="scramble"
+            sequential
+            revealDirection="start"
+            speed={60}
+            maxIterations={10}
+            hoverRadius={100}
+            scrambleColor="#7d8c9b"
+            loop={false}
+            loopDelay={2000}
+            useOriginalCharsOnly={false}
+            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
+            className="revealed"
+            encryptedClassName="encrypted"
+            parentClassName={descriptionCss}
+          />
+        </p>
       )}
     </li>
   );

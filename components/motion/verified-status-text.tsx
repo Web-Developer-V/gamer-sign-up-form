@@ -4,8 +4,8 @@ import useAnimateOnValueChange from "@/hooks/use-animate-on-value-change";
 
 import type { VerifiedStatusTextProps } from "@/types/types";
 
-export default function VerifiedStatusText({ isValid, notValidText, validateValue, isComplete }: VerifiedStatusTextProps) {
-  const statusText = isComplete ? "locked" : isValid ? "ok" : validateValue?.trim() ? notValidText : "pending";
+export default function VerifiedStatusText({ isValid, notValidText, validateValue, isComplete, hasAttemptedSubmit }: VerifiedStatusTextProps) {
+  const statusText = isComplete ? "locked" : isValid ? "ok" : (validateValue?.trim() || hasAttemptedSubmit) && !isValid ? notValidText : "pending";
 
   const shouldAnimateText = useAnimateOnValueChange(statusText);
 
@@ -28,7 +28,7 @@ export default function VerifiedStatusText({ isValid, notValidText, validateValu
           loopDelay={2000}
           useOriginalCharsOnly={false}
           characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+"
-          className={`revealed ${isValid === true ? "text-neutral-100" : validateValue?.trim() ? "text-reds-400" : undefined}`}
+          className={`revealed ${isValid === true ? "text-neutral-100" : validateValue?.trim() || hasAttemptedSubmit ? "text-reds-400" : undefined}`}
           encryptedClassName="encrypted"
         />
       )}

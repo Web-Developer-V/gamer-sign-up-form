@@ -24,6 +24,7 @@ export interface FormStateProps {
   validateValue: InputValueType;
   isValid: IsValidType;
   passwordLevel: PasswordLevelType | undefined;
+  hasAttemptedSubmit: boolean;
 }
 
 export interface FormActionsProps {
@@ -31,8 +32,9 @@ export interface FormActionsProps {
   changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   compositionEndHandler: (e: React.CompositionEvent<HTMLInputElement>) => void;
   toggleTermsHandler: () => void;
-  completeFormHandler: () => void;
+  completeFormHandler: (state: boolean) => void;
   resetFormHandler: () => void;
+  setAttemptedSubmitHandler: (state: boolean) => void;
 }
 
 export interface FormArticleProps {
@@ -50,7 +52,7 @@ export interface FormInputProps {
   inputValue: string;
   type?: React.HTMLInputTypeAttribute;
   isValid: boolean;
-  hasSubmitted: boolean;
+  hasAttemptedSubmit: boolean;
   isChecked?: boolean;
   passwordLevel?: PasswordLevelType;
   showPassword?: {
@@ -70,7 +72,7 @@ export interface InputProps {
   autoComplete?: string;
   inputValue: string;
   isValid: boolean;
-  hasSubmitted: boolean;
+  hasAttemptedSubmit: boolean;
   compositionEnd: (e: React.CompositionEvent<HTMLInputElement>) => void;
   change: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -79,6 +81,7 @@ export interface VerifiedStatusArticleProps {
   isValid: FormStateProps["isValid"];
   validateValue?: FormStateProps["validateValue"];
   isComplete: FormStateProps["isComplete"];
+  hasAttemptedSubmit: FormStateProps["hasAttemptedSubmit"];
 }
 
 export interface VerifiedStatusTextProps {
@@ -86,12 +89,13 @@ export interface VerifiedStatusTextProps {
   validateValue?: string;
   notValidText: string;
   isComplete: FormStateProps["isComplete"];
+  hasAttemptedSubmit: FormStateProps["hasAttemptedSubmit"];
 }
 
 export interface HandShakeCompleteProps {
   validateValue: FormStateProps["validateValue"];
   reset: FormActionsProps["resetFormHandler"];
-  setHasSubmitted: (state: boolean) => void;
+  setAttemptedSubmitHandler: FormActionsProps["setAttemptedSubmitHandler"];
   setShouldAnimateText: (state: boolean) => void;
 }
 
